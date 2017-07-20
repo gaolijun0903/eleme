@@ -35,6 +35,9 @@
 									￥{{food.oldPrice}}
 								</span>
 							</div>
+							<div class="cartcontrol-wrapper">
+								<cartcontrol :food="food" v-on:cartadd="_drop"> </cartcontrol>
+							</div>
 						</div>
 					</li>
 				</ul>
@@ -42,13 +45,14 @@
 		</ul>
 	</div>
 	
-  	<shopcart  :delivey-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+  	<shopcart ref="shopcart" :selected-foods="selectedFoods" :delivey-price="seller.deliveryPrice" :min-price="seller.minPrice"> </shopcart>
 </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
 import shopcart from 'components/shopcart/shopcart'
+import cartcontrol from 'components/cartcontrol/cartcontrol'
 
 const ERR_OK = 0;
 export default{
@@ -61,19 +65,6 @@ export default{
 	data(){
 		return {
 			goods:[],
-			selectedFoods:[
-				{
-					goodsId:'001',
-					name:"aaa",
-					price:10,
-					quantity:2
-				},{
-					goodsId:'002',
-					name:"bbb",
-					price:12,
-					quantity:1
-				}
-			],
 			listHeight:[],
 			scrollY:0
 		}
@@ -88,11 +79,21 @@ export default{
 				}
 			}
 			return 0
+		},
+		selectedFoods(){
+			let foods= [];
+			this.goods.forEach((item)=>{
+				item.foods.forEach((food)=>{
+					if(food.quantity){
+					foods.push(food)
+					}
+				})
+			})
+			return foods
 		}
 	},
 	mounted(){
 		this.supportsType=["decrease","discount","special","invoice","guarantee"];
-		
 		this.$http.get('/api/goods').then((res)=>{
 			var result = res.body;
 			if(result.errno == ERR_OK){
@@ -107,7 +108,7 @@ export default{
 	methods:{
 		_initScroll(){
 			this.menuScroll = new BScroll(this.$refs.menuWrapper,{click:true});
-			this.foodScroll = new BScroll(this.$refs.foodsWrapper,{probeType:3});
+			this.foodScroll = new BScroll(this.$refs.foodsWrapper,{probeType:3,click:true});
 			this.foodScroll.on("scroll",(pos)=>{
 				this.scrollY = Math.abs(Math.round(pos.y))
 			})
@@ -128,12 +129,17 @@ export default{
 			let foodList = document.getElementsByClassName('food-list-hook');
 			let el = foodList[idx];
 			this.foodScroll.scrollToElement(el,300)
+		},
+		_drop(el){
+			this.$refs.shopcart.drop(el);
 		}
 	},
 	components:{
-		shopcart
+		shopcart,
+		cartcontrol
 	}
 }
+
 </script>
 
 <style>
@@ -248,8 +254,10 @@ export default{
 .foods-wrapper .extra .rating{
 	margin-left:12px;
 }
-.foods-wrapper .content .price{
-	
+.foods-wrapper .content .cartcontrol-wrapper{
+	position: absolute;
+	right: 0;
+	bottom: 12px;
 }
 .foods-wrapper .content .newprice{
 	font-size:10px;

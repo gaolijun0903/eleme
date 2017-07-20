@@ -22,7 +22,7 @@
 	const ERR_OK = 0;
 	export default {
 		name:"app",
-	  data:()=>{
+	  data(){
 	  	return{
 	  		seller:{}
 	  	}
@@ -30,7 +30,7 @@
 		components:{
 			"v-header":header
 		},
-	  mounted:function(){
+	  mounted(){
 			this.$http.get("/api/seller").then((res)=>{
 				var result = res.body;
 				if(result.errno === ERR_OK){

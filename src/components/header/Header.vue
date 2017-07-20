@@ -29,45 +29,43 @@
 		<div class="background">
 			<img :src="seller.avatar" alt="">
 		</div>
-	<transition name="fade">
-		
-	
-		<div class="detail" v-show="detailShow">
-			<div class="detail-wrapper clearfix">
-				<div class="detail-main">
-					<h1 class="name">{{seller.name}}</h1>
-					<div class="star-wrapper">
-						<star :size="48" :score="seller.score"></star>
-					</div>
-					<div class="title">
-						<div class="line"></div>
-						<div class="text">优惠信息</div>
-						<div class="line"></div>
-					</div>
-					<ul class="support" v-if="seller.supports">
-						<li v-for="support in seller.supports">
-							<span class="icon" :class="supportsType[support.type]"></span>
-							<span class="text">{{support.description}}</span>
-						</li>
-					</ul>
-					<div class="title">
-						<div class="line"></div>
-						<div class="text">商家公告</div>
-						<div class="line"></div>
-					</div>
-					<div class="bulletin">
-						<div class="bulletin-text">
-							{{seller.bulletin}}
+		<transition name="fade">
+			<div class="detail" v-show="detailShow">
+				<div class="detail-wrapper clearfix">
+					<div class="detail-main">
+						<h1 class="name">{{seller.name}}</h1>
+						<div class="star-wrapper">
+							<star :size="48" :score="seller.score"></star>
 						</div>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">优惠信息</div>
+							<div class="line"></div>
+						</div>
+						<ul class="support" v-if="seller.supports">
+							<li v-for="support in seller.supports">
+								<span class="icon" :class="supportsType[support.type]"></span>
+								<span class="text">{{support.description}}</span>
+							</li>
+						</ul>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">商家公告</div>
+							<div class="line"></div>
+						</div>
+						<div class="bulletin">
+							<div class="bulletin-text">
+								{{seller.bulletin}}
+							</div>
+						</div>
+						
 					</div>
-					
+				</div>
+				<div class="detail-close" @click="hideDetail">
+					<i class="icon-close"></i>
 				</div>
 			</div>
-			<div class="detail-close" @click="hideDetail">
-				<i class="icon-close"></i>
-			</div>
-		</div>
-	</transition>
+		</transition>
 	
 	</div>
 </template>
