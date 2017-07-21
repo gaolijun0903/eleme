@@ -1,11 +1,11 @@
 <template>
 <div class="cartcontrol">
 	<transition name="move">
-		<div class="cart-decrease" v-show="food.quantity" @click="decreaseCart($event)">
+		<div class="cart-decrease" v-show="food.quantity>0" @click="decreaseCart($event)">
 			<i class="icon-remove_circle_outline"></i>
 		</div>
 	</transition>
-	<div class="cart-quantity" v-show="food.quantity">{{food.quantity}}</div>
+	<div class="cart-quantity" v-show="food.quantity>0">{{food.quantity}}</div>
 	<div class="cart-add" @click="addCart">
 		<i class="icon-add_circle"></i>
 	</div>
@@ -34,6 +34,9 @@ export default{
 		},
 		decreaseCart(ev){
 			if(!ev._constructed){
+				return
+			}
+			if(this.food.quantity<=0){
 				return
 			}
 			this.food.quantity--;

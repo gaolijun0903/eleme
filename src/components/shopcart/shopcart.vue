@@ -1,6 +1,6 @@
 <template>
 <div class="shopcart">
-	<div class="content">
+	<div class="content" @click="toggleShow">
 		<div class="content-left">
 			<div class="logo-wrapper">
 				<div class="logo" :class="{'hightlight':totalQuantity}">
@@ -15,16 +15,44 @@
 			<div class="pay" :class="{'enough':totalPrice >= minPrice}">{{payDesc}}</div>
 		</div>
 	</div>
+	<!--5个下落小球动画-->
 	<div class="ball-containner">
-		<transition-group tag="p" name="flyball" :css="false" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" >
-			<div class="ball" v-for="(ball,idx) in balls" v-show="ball.show" :key="ball"></div>
-		</transition-group>
+		<transition name="flyball" 
+			@before-enter="beforeEnter" 
+			@enter="enter"
+			@after-enter="afterEnter"
+			v-for="(ball,idx) in balls" 
+			:key="idx">
+			<div class="ball" v-show="ball.show">
+				<div class="inner inner-hook"></div>
+			</div>
+		</transition>
 	</div>
+	
+	<transition name="fold">
+		<div class="shopcart-list" v-show="listShow">
+			<div class="list-header">
+				<span class="name">购物车</span>
+				<span class="empty">清空</span>
+			</div>
+			<div class="list-content">
+				<ul>
+					<li class="food" v-for="food in selectedFoods">
+						<span class="name">{{food.name}}</span>
+						<span class="price">￥{{food.price*food.quantity}}</span>
+						<div class="cartcontrol-wrapper">
+							<cartcontrol :food = "food"></cartcontrol>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</transition>
 </div>
 </template>
 
 <script>
-	
+import cartcontrol from "components/cartcontrol/cartcontrol"	
 export default{
 	props:{
 		deliveryPrice:{
@@ -47,7 +75,8 @@ export default{
 			balls:[
 				{show:false},{show:false},{show:false},{show:false},{show:false}
 			],
-			dropballs:[]
+			dropballs:[],
+			fold:true
 		}
 	},
 	computed:{
@@ -74,42 +103,63 @@ export default{
 			}else {
 				return `去结算`
 			}
+		},
+		listShow(){
+			if(!this.totalQuantity){
+				this.fold = true;
+				return false;
+			}
+			let show = !this.fold;
+			return show;
 		}
 	},
 	methods:{
+		toggleShow(){
+			if(!this.totalQuantity){
+				return ;
+			}
+			this.fold = !this.fold;
+		},
 		drop(target){
-			console.log(target)
-			this.balls.forEach((ball)=>{
+			for(let i=0;i< this.balls.length;i++){
+				let ball = this.balls[i];
 				if(!ball.show){
 					ball.show = true;
 					ball.target = target;
-//					this.set(ball,"target",target);
 					this.dropballs.push(ball);
-					return
+					return;
 				}
-			})
+			}
 		},
 		beforeEnter: function (el) {
 			let count = this.balls.length;
-			console.log(count)
-//			while(count--){
-//				let ball = this.balls[count];
-//				if(ball.show){
-//					let rect = ball.target.getBoundingClientRect();
-//					let x = rect.left -32;
-//					let y = -(window.innerHeight-rect.top-22);
-//					el.style.display = "";
-//					el.style.webkitTransform = `translate3d(${x},${y},0)`;
-//					el.style.transform = `translate3d(${x},${y},0)`;
-//				}
-//			}
+			while(count--){
+				let ball = this.balls[count];
+				if(ball.show){
+					let rect = ball.target.getBoundingClientRect();
+					let x = rect.left -32;
+					let y = -(window.innerHeight-rect.top-22);
+					el.style.display ="";
+					el.style.webkitTransform = `translate3d(0, ${y}px, 0)`;
+					el.style.transform = `translate3d(0, ${y}px, 0)`;
+					let inner = el.getElementsByClassName('inner-hook')[0];
+					inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
+					inner.style.transform = `translate3d(${x}px, 0, 0)`;
+				}
+			}
 		},
-		enter: function (el, done) {
+		enter: function (el,done) {
 		    let rf = el.offsetHeight; //触发浏览器重绘
 		    this.$nextTick(()=>{
 		    	el.style.webkitTransform = 'translate3d(0,0,0)';
 				el.style.transform = 'translate3d(0,0,0)';
+				let inner = el.getElementsByClassName('inner-hook')[0];
+				inner.style.webkitTransform = 'translate3d(0,0,0)';
+				inner.style.transform = 'translate3d(0,0,0)';
 		    })
+			setTimeout(()=>{
+			   	done();
+			},600)
 		},
 		afterEnter: function (el) {
 		    let ball = this.dropballs.shift();
@@ -118,6 +168,9 @@ export default{
 		    	el.style.display="none";
 		    }
 		}
+	},
+	components:{
+		cartcontrol
 	}
 }
 </script>
@@ -220,28 +273,89 @@ export default{
 	color: #FFFFFF;
 }
 
-.shopcart .ball-containner{
-	
-}
-
 .shopcart .ball-containner .ball{
 	position: fixed;
 	left: 32px;
 	bottom: 22px;
 	z-index: 200;
+}
+.shopcart .ball-containner .ball .inner{
 	width: 16px;
 	height: 16px;
 	border-radius: 50%;
 	background:rgb(0,160,220);
-	transition: all .5s liner;
+	transition: all .5s linear;	
+}
+.flyball-enter-active{
+ 	transition: all .6s cubic-bezier(0.23,-0.36,0.93,0.71);
 }
 
-/*.flyball-enter-active{
+.shopcart .shopcart-list{
+	position: absolute;
+	top: -400%;
+	left: 0;
+	z-index: -1;
+	width: 100%;
+}
+.shopcart .shopcart-list .list-header{
+	height: 40px;
+	line-height: 40px;
+	background:#f3f5f7;
+	padding:0 18px;
+	border-bottom: 1px solid rgba(7,17,27,0.1);
+}
+.shopcart .list-header .title{
+	float: left;
+	font-size: 14px;
+	color: rgb(7,17,27);
+}
+.shopcart .list-header .empty{
+	float: right;
+	font-size: 12px;
+	color: rgb(0,160,220);
+}
+.shopcart .shopcart-list .list-content{
+	padding: 0 18px;
+	max-height: 217px;
+	overflow: hidden;
+	background: #FFFFFF;
+}
+.shopcart .list-content .food{
+	position: relative;
+	padding: 12px 0;
+	box-sizing: border-box;
+	border-bottom: 1px solid rgba(7,17,27,0.1);
+}
+.shopcart .list-content .food .name{
+	font-size: 14px;
+	line-height: 24px;	
+	color: rgb(7,17,27);
+}
+.shopcart .list-content .food .price{
+	position: absolute;
+	right: 90px;
+	bottom: 12px;
+	font-size: 14px;
+	line-height: 24px;
+	font-weight: 700;
+	color:rgb(240,20,20)
 	
 }
-.flyball-enter{
-	
-}*/
+.shopcart .list-content .food .cartcontrol-wrapper{
+	position: absolute;
+	right: 0;
+	bottom: 6px;
+}
 
 
+
+.fold-enter-active,.fold-leave-active{
+	transition:all .4s;
+}
+.fold-enter-active{
+	transform:translate3d(0,-100%,0) ; 
+}
+.fold-enter,.fold-leave-to{
+	transform:translate3d(0,0,0) ; 
+}
 </style>
