@@ -1,4 +1,5 @@
 <template>
+<div>
 <div class="shopcart">
 	<div class="content" @click="toggleShow">
 		<div class="content-left">
@@ -11,7 +12,7 @@
 			<div class="price" :class="{'hightlight':totalQuantity}">￥{{totalPrice}}</div>
 			<div class="desc">另需配送费￥{{deliveryPrice}}元</div>
 		</div>
-		<div class="content-right">
+		<div class="content-right" @click.stop="pay">
 			<div class="pay" :class="{'enough':totalPrice >= minPrice}">{{payDesc}}</div>
 		</div>
 	</div>
@@ -28,14 +29,14 @@
 			</div>
 		</transition>
 	</div>
-	
+	<!--购物车商品列表-->
 	<transition name="fold">
 		<div class="shopcart-list" v-show="listShow">
 			<div class="list-header">
 				<span class="name">购物车</span>
-				<span class="empty">清空</span>
+				<span class="empty" @click="empty">清空</span>
 			</div>
-			<div class="list-content">
+			<div class="list-content" ref="cartList">
 				<ul>
 					<li class="food" v-for="food in selectedFoods">
 						<span class="name">{{food.name}}</span>
@@ -48,11 +49,20 @@
 			</div>
 		</div>
 	</transition>
+	
 </div>
+<!--购物车商品列表背景层-->
+<div class="listMask"  v-show="listShow" @click="hideList"></div>
+
+	
+</div>	
+	
 </template>
 
 <script>
 import cartcontrol from "components/cartcontrol/cartcontrol"	
+import BScroll from "better-scroll"
+
 export default{
 	props:{
 		deliveryPrice:{
@@ -110,15 +120,38 @@ export default{
 				return false;
 			}
 			let show = !this.fold;
+			if(show){
+				this.$nextTick(()=>{
+					if(!this.cartListScroll){
+						this.cartListScroll = new BScroll(this.$refs.cartList,{click:true});
+					}else{
+						this.cartListScroll.refresh();
+					}
+				})
+			}
 			return show;
 		}
 	},
 	methods:{
+		pay(){
+			if(this.totalPrice < this.minPrice){
+				return 
+			}
+			window.alert(`需要支付${this.totalPrice}元`)
+		},
 		toggleShow(){
 			if(!this.totalQuantity){
 				return ;
 			}
 			this.fold = !this.fold;
+		},
+		empty(){
+			this.selectedFoods.forEach((food)=>{
+				food.quantity = 0;
+			})
+		},
+		hideList(){
+			this.fold =true;
 		},
 		drop(target){
 			for(let i=0;i< this.balls.length;i++){
@@ -182,7 +215,7 @@ export default{
 	bottom: 0;
 	width: 100%;
 	height: 48px;
-	z-index: 50px;
+	z-index: 50;
 }
 .shopcart .content{
 	display: flex;
@@ -292,7 +325,7 @@ export default{
 
 .shopcart .shopcart-list{
 	position: absolute;
-	top: -400%;
+	top: -540%;
 	left: 0;
 	z-index: -1;
 	width: 100%;
@@ -338,7 +371,7 @@ export default{
 	font-size: 14px;
 	line-height: 24px;
 	font-weight: 700;
-	color:rgb(240,20,20)
+	color:rgb(240,20,20);
 	
 }
 .shopcart .list-content .food .cartcontrol-wrapper{
@@ -346,16 +379,24 @@ export default{
 	right: 0;
 	bottom: 6px;
 }
-
-
-
-.fold-enter-active,.fold-leave-active{
-	transition:all .4s;
+ .listMask{
+	position: fixed;
+	top: 0;
+	left:0;
+	width: 100%;
+	height: 100%;
+	z-index: 40;
+	backdrop-filter:blur(10px);
+	background-color: rgba(7,17,27,0.6);
 }
-.fold-enter-active{
-	transform:translate3d(0,-100%,0) ; 
+
+
+/*.fold-enter-active,.fold-leave-active{
+	transition:all .4s linear;
+	transform:translate3d(0,-300px,0); 
 }
+
 .fold-enter,.fold-leave-to{
-	transform:translate3d(0,0,0) ; 
-}
+	transform:translate3d(0,0,0); 
+}*/
 </style>

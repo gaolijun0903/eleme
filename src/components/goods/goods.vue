@@ -16,7 +16,7 @@
 			<li class="food-list food-list-hook" v-for="item in goods">
 				<h1 class="title">{{item.name}}</h1>
 				<ul>
-					<li class="food-item border1px" v-for="food in item.foods">
+					<li class="food-item border1px" v-for="food in item.foods" @click="selectFood(food,$event)">
 						<div class="icon">
 							<img :src="food.icon" width="57" height="57" />
 						</div>
@@ -36,7 +36,7 @@
 								</span>
 							</div>
 							<div class="cartcontrol-wrapper">
-								<cartcontrol :food="food" v-on:cartadd="_drop"> </cartcontrol>
+								<cartcontrol :food="food" @cartadd="_drop"> </cartcontrol>
 							</div>
 						</div>
 					</li>
@@ -44,7 +44,7 @@
 			</li>
 		</ul>
 	</div>
-	
+	<food ref="food" :food="selectedFood"></food>
   	<shopcart ref="shopcart" :selected-foods="selectedFoods" :delivey-price="seller.deliveryPrice" :min-price="seller.minPrice"> </shopcart>
 </div>
 </template>
@@ -53,6 +53,8 @@
 import BScroll from 'better-scroll'
 import shopcart from 'components/shopcart/shopcart'
 import cartcontrol from 'components/cartcontrol/cartcontrol'
+import food from 'components/food/food'
+
 
 const ERR_OK = 0;
 export default{
@@ -66,7 +68,8 @@ export default{
 		return {
 			goods:[],
 			listHeight:[],
-			scrollY:0
+			scrollY:0,
+			selectedFood:{}
 		}
 	},
 	computed:{
@@ -106,13 +109,6 @@ export default{
 		})
 	},
 	methods:{
-		_initScroll(){
-			this.menuScroll = new BScroll(this.$refs.menuWrapper,{click:true});
-			this.foodScroll = new BScroll(this.$refs.foodsWrapper,{probeType:3,click:true});
-			this.foodScroll.on("scroll",(pos)=>{
-				this.scrollY = Math.abs(Math.round(pos.y))
-			})
-		},
 		calculateHeight(){
 			let foodList = document.getElementsByClassName('food-list-hook');
 			let height = 0;
@@ -130,6 +126,20 @@ export default{
 			let el = foodList[idx];
 			this.foodScroll.scrollToElement(el,300)
 		},
+		selectFood(food,ev){
+			if(!ev._constructed){
+				return
+			}
+			this.selectedFood = food;
+			this.$refs.food.show();
+		},
+		_initScroll(){
+			this.menuScroll = new BScroll(this.$refs.menuWrapper,{click:true});
+			this.foodScroll = new BScroll(this.$refs.foodsWrapper,{probeType:3,click:true});
+			this.foodScroll.on("scroll",(pos)=>{
+				this.scrollY = Math.abs(Math.round(pos.y))
+			})
+		},
 		_drop(el){
 			//体验优化，异步执行下落动画
 			this.$nextTick(()=>{
@@ -139,7 +149,8 @@ export default{
 	},
 	components:{
 		shopcart,
-		cartcontrol
+		cartcontrol,
+		food
 	}
 }
 
