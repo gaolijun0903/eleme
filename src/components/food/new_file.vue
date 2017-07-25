@@ -111,11 +111,9 @@ export default{
 			Vue.set(this.food,"quantity",1)
 		},
 		selectFn(type){
-			console.log(type)
 			this.selectType = type;
 		},
 		toggleContent(onlyContent){
-			console.log(onlyContent)
 			this.onlyContent = onlyContent;
 		},
 		needShow(rateType,text){
