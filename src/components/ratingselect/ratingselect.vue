@@ -5,7 +5,11 @@
 		<span class="block positive" :class="{'active':myselectType===0}" @click="select(0,$event)">{{desc.positive}}<span class='count'>{{positives.length}}</span></span>
 		<span class="block negtive" :class="{'active':myselectType===1}" @click="select(1,$event)">{{desc.negtive}}<span class='count'>{{negtives.length}}</span></span>
 	</div>
-	<div class="switch" :class="{'on':myonlyContent}" @click="toggleContent">
+	<div class="switch on" v-show="myonlyContent===1" @click="toggleContent(1,$event)">
+		<span class="icon-check_circle"></span>
+		<span class="text">只看有内容的评价</span>
+	</div>
+	<div class="switch" v-show="myonlyContent===0" @click="toggleContent(0,$event)">
 		<span class="icon-check_circle"></span>
 		<span class="text">只看有内容的评价</span>
 	</div>
@@ -43,19 +47,17 @@ export default{
 			}
 		}
 	},
-	data(){
-		return{
-//			myselectType:this.selectType,
-			myonlyContent:this.onlyContent
-		}
-	},
 	computed:{
 		myselectType(){
 			return this.selectType
 		},
-//		myonlyContent(){
-//			return this.onlyContent
-//		},
+		myonlyContent(){
+			if(this.onlyContent){
+				return 1
+			}else{
+				return 0
+			}
+		},
 		positives(){
 			return this.ratings.filter((rating)=>{
 				return rating.rateType === POSITIVE;
@@ -75,12 +77,17 @@ export default{
 			this.myselectType = type;
 			this.$emit("ratingType",type);
 		},
-		toggleContent(ev){
+		toggleContent(flag,ev){
 			if(!ev._constructed){
 				return;
 			}
-			this.myonlyContent = !this.myonlyContent;
-			this.$emit("contentToggle",this.myonlyContent);
+			if(flag===1){
+				this.myonlyContent = 0;
+				this.$emit("contentToggle",false);
+			}else{
+				this.myonlyContent = 1;
+				this.$emit("contentToggle",true);
+			}
 		}
 	}
 }

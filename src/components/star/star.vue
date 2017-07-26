@@ -76,7 +76,7 @@ export default{
 .star36 .star-item{
 	width:15px;
 	height:15px;
-	margin-right:16px;
+	margin-right:6px;
 }
 .star36 .star-item.on{
 	background-image:url(star36_on@2x.png)

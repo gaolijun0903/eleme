@@ -41,7 +41,7 @@
 							<span class="name">{{rating.username}}</span>
 							<img class="avatar" :src="rating.avatar" />
 						</div>
-						<div class="time">{{rating.rateTime}}</div>
+						<div class="time">{{rating.rateTime | formatDate}}</div>
 						<p class="text">
 							<span :class="{'icon-thumb_up':rating.rateType===0  ,'icon-thumb_down':rating.rateType===1 }"></span>{{rating.text}}
 						</p>
@@ -49,8 +49,6 @@
 				</ul>
 				<div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价内容</div>
 			</div>
-			
-			
 		</div>
 	</div>
 </transition>
@@ -59,6 +57,7 @@
 <script>
 import Vue from "vue"
 import BScroll from 'better-scroll'
+import {myformatDate} from 'components/commonjs/date.js'
 import cartcontrol from 'components/cartcontrol/cartcontrol'
 import split from 'components/split/split'
 import ratingselect from 'components/ratingselect/ratingselect'
@@ -96,7 +95,6 @@ export default{
 				}else{
 					this.foodScroll.refresh();
 				}
-				
 			})
 		},
 		hide(){
@@ -106,17 +104,20 @@ export default{
 			if(!ev._constructed){
 				return
 			}
-			console.log(ev.target)
 			this.$emit('cartadd',ev.target);
 			Vue.set(this.food,"quantity",1)
 		},
 		selectFn(type){
-			console.log(type)
 			this.selectType = type;
+			this.$nextTick(()=>{
+				this.foodScroll.refresh();
+			});
 		},
 		toggleContent(onlyContent){
-			console.log(onlyContent)
 			this.onlyContent = onlyContent;
+			this.$nextTick(()=>{
+				this.foodScroll.refresh();
+			});
 		},
 		needShow(rateType,text){
 			if(this.onlyContent && !text){
@@ -127,6 +128,12 @@ export default{
 			}else{
 				return rateType === this.selectType ;
 			}
+		}
+	},
+	filters:{
+		formatDate(time){
+			var date = new Date(time);
+			return myformatDate(date,"yyyy-MM-dd hh:mm");
 		}
 	},
 	components:{
@@ -314,4 +321,10 @@ export default{
 .food-content .rating-item .text .icon-thumb_up{
 	color: rgb(0,160,220);
 }
+.food-content .rating-wrapper .no-rating{
+	padding:16px 0;
+	font-size: 12px;
+	color: rgb(147,153,159);
+}
+
 </style>
