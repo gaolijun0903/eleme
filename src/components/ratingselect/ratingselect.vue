@@ -1,6 +1,6 @@
 <template>
 <div class="ratingselect">
-	<div class="rating-type">
+	<div class="rating-type border1px">
 		<span class="block positive" :class="{'active':myselectType===2}" @click="select(2,$event)">{{desc.all}}<span class='count'>{{ratings.length}}</span></span>
 		<span class="block positive" :class="{'active':myselectType===0}" @click="select(0,$event)">{{desc.positive}}<span class='count'>{{positives.length}}</span></span>
 		<span class="block negtive" :class="{'active':myselectType===1}" @click="select(1,$event)">{{desc.negtive}}<span class='count'>{{negtives.length}}</span></span>
@@ -100,7 +100,7 @@ export default{
 .ratingselect .rating-type{
 	padding: 18px 0;
 	margin:0 18px;
-	border-bottom:1px solid rgba(7,17,27,0.1);
+	/*border-bottom:1px solid rgba(7,17,27,0.1);*/
 	font-size: 0;
 }
 .ratingselect .rating-type .block{

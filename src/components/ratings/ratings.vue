@@ -28,7 +28,7 @@
 			<ratingselect :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="ratings" @ratingType="selectFn" @contentToggle="toggleContent"> </ratingselect>
 			<div class="rating-wrapper">
 				<ul v-show="ratings && ratings.length">
-					<li class="rating-item" v-for="rating in ratings" v-show="needShow(rating.rateType,rating.text)">
+					<li class="rating-item border1px" v-for="rating in ratings" v-show="needShow(rating.rateType,rating.text)">
 						<div class="avatar">
 							<img :src="rating.avatar" width="28" height="28"/>
 						</div>
@@ -44,12 +44,7 @@
 								<span class="recommend-item" v-for="recommend in rating.recommend">{{recommend}}</span>
 							</div>
 							<div class="time">{{rating.rateTime | formatDate}}</div>
-							
-							
 						</div>
-							
-						
-						
 					</li>
 				</ul>
 				<div class="no-rating" v-show="!ratings || !ratings.length">暂无评价内容</div>
@@ -74,9 +69,6 @@ const ERR_OK = 0;
 export default{
 	props:{
 		seller:{
-			type:Object
-		},
-		food:{
 			type:Object
 		}
 	},
@@ -155,7 +147,6 @@ export default{
 	width: 100%;
 	overflow: hidden;
 }
-
 .ratings-content .overview{
 	display: flex;
 	padding:18px 0;
@@ -184,7 +175,6 @@ export default{
 	line-height: 10px;
 	color:rgb(147,153,159);
 }
-
 .ratings-content .overview .overview-right{
 	flex:1;
 	padding-left:24px;
@@ -227,16 +217,13 @@ export default{
 	line-height: 18px;
 	color: rgb(147,153,159);
 }
-
-
-
 .ratings-content .rating-wrapper{
 	padding:0 18px;
 }
 .ratings-content .rating-wrapper .rating-item{
 	display: flex;
 	padding: 16px 0;
-	border-bottom:1px solid rgba(7,17,27,0.1)
+	/*border-bottom:1px solid rgba(7,17,27,0.1)*/
 }
 .ratings-content .rating-item .avatar{
 	flex:0 0 28px;
@@ -258,7 +245,7 @@ export default{
 }
 .ratings-content .rating-item .content .star-wrapper{
 	margin-bottom: 6px;
-	
+	font-size: 0;
 }
 .ratings-content .rating-item .content .star-wrapper .stars{
 	display: inline-block;
@@ -272,17 +259,19 @@ export default{
 	line-height: 12px;
 	color: rgb(147,153,159);
 }
-
 .ratings-content .rating-item .content .text{
 	margin-bottom: 8px;
 	font-size: 12px;
 	line-height: 18px;
 	color: rgb(7,17,27);
 }
+.ratings-content .rating-item  .content .recommend {
+	font-size: 0;
+	line-height: 16px;
+}
 .ratings-content .rating-item .recommend .icon-thumb_up,.ratings-content .rating-item .recommend .icon-thumb_down{
 	margin-right: 8px;
 	font-size: 12px;
-	line-height: 16px;
 	color: rgb(183,187,191);
 }
 .ratings-content .rating-item .recommend .icon-thumb_up{
@@ -291,11 +280,11 @@ export default{
 .ratings-content .rating-item .recommend .recommend-item{
 	display: inline-block;
 	border:1px solid rgba(7,17,27,0.1);
-	border-radius: 2px;
+	border-radius: 1px;
 	padding:0 6px;
 	margin-right: 8px;
+	margin-bottom: 4px;
 	font-size: 9px;
-	line-height: 16px;
 	color: rgb(147,153,159);
 }
 .ratings-content .rating-item .content .time{
