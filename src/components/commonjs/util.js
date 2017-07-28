@@ -5,7 +5,7 @@ export function urlParse(){
 	let reg = /[?&][^?&]+=[^?&]+/g;
 	let arr = url.match(reg);
 	if(arr){
-		arr.foreEach((item)=>{
+		arr.forEach((item)=>{
 			let tempArr = item.substring(1).split('=');
 			let key = decodeURIComponent(tempArr[0]);
 			let val = decodeURIComponent(tempArr[1]);

@@ -193,6 +193,7 @@ export default{
 			setTimeout(()=>{
 			   	done();
 			},600)
+			//el.addEventListener('transitioned',done);  //transitioned是css3的特性，是过渡执行完的状态
 		},
 		afterEnter: function (el) {
 		    let ball = this.dropballs.shift();

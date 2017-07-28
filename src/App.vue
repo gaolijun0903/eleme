@@ -12,29 +12,35 @@
   			<router-link to="/seller">商家</router-link>
   		</div>
   	</div>
-  	<router-view :seller="seller"></router-view>
+  	<keep-alive><router-view :seller="seller" ></router-view></keep-alive>
   </div>
 </template>
 
 <script>
 	import header from "components/header/Header"
-	
+	import {urlParse} from "components/commonjs/util.js"
 	const ERR_OK = 0;
 	export default {
 		name:"app",
 	  data(){
 	  	return{
-	  		seller:{}
+	  		seller:{
+	  			id:(()=>{
+	  				let queryParam = urlParse();
+	  				return queryParam.id;
+	  			})()
+	  		}
 	  	}
 	  },
 		components:{
 			"v-header":header
 		},
 	  mounted(){
-			this.$http.get("/api/seller").then((res)=>{
+			this.$http.get("/api/seller?id="+this.seller.id).then((res)=>{
 				var result = res.body;
 				if(result.errno === ERR_OK){
-					this.seller = result.data
+//					this.seller = result.data; //这种写法会把ID覆盖掉
+					this.seller = Object.assign({},this.seller,result.data);
 				}
 			},(err)=>{
 				console.log(err)

@@ -74,7 +74,7 @@ export default{
 			if(!ev._constructed){
 				return;
 			}
-			this.myselectType = type;
+			this.myselectType = type;  //视频教程13章中的补充：可以不在这里修改这个属性，返回给父组件，在父组件中修改就好了
 			this.$emit("ratingType",type);
 		},
 		toggleContent(flag,ev){

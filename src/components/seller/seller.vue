@@ -9,7 +9,7 @@
 					<span class="ratingCount">({{seller.ratingCount}})</span>
 					<span class="sellCount">月售{{seller.sellCount}}单</span>
 				</div>
-				<div class="likes" @click="likeit">
+				<div class="likes" @click="toggleFavorite">
 					<i class="icon-favorite" :class="{'favorite':favorite}"></i>
 					<div class="text">{{favoriteText}}</div>
 				</div>
@@ -80,6 +80,8 @@ import BScroll from 'better-scroll'
 import star from "components/star/star"
 import split from "components/split/split"
 import shopcart from 'components/shopcart/shopcart'
+import {saveToLocal,loadFromLocal} from "components/commonjs/store.js"
+	
 export default{
 	props:{
 		seller:{
@@ -88,7 +90,9 @@ export default{
 	},
 	data(){
 		return{
-			favorite:false,
+			favorite:(()=>{
+				return loadFromLocal(this.seller.id, 'favorite', false);
+			})(),
 			supportsType:["decrease","discount","special","invoice","guarantee"]
 		}
 	},
@@ -120,8 +124,12 @@ export default{
 		}
 	},
 	methods:{
-		likeit(){
+		toggleFavorite(ev){
+			if(ev._consructed){
+				return;
+			}
 			this.favorite = !this.favorite;
+			saveToLocal(this.seller.id, 'favorite',this.favorite)
 		}
 	},
 	components:{
